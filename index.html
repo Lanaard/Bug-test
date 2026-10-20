@@ -1,33 +1,17 @@
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-<title>Zoho Bookings - Integration Configuration Update test</title>
-
-</head>
-
-<body>
-
+<!doctype html>
+<meta charset="utf-8">
+<title>postMessage test</title>
+<input id="target" placeholder="Bookings admin URL" size="60">
+<button onclick="openTarget()">1. Open Bookings</button>
+<button onclick="sendFake()">2. Send fake success</button>
 <script>
-
-var target = window.open('http://bookingslab.localzoho.com/#/home/dashboard/settings/integrations/video-conferencing', 'zoho_bookings');
-
-var payload = JSON.stringify({"status": true});
-
-setTimeout(function() {
-
-setInterval(function() {
-
-try { target.postMessage(payload, '*'); } catch(e) {}
-
-}, 100);
-
-}, 2000);
-
+  var bookingsWindow = null;
+  function openTarget() {
+    bookingsWindow = window.open(document.getElementById("target").value, "_blank");
+  }
+  function sendFake() {
+    if (bookingsWindow) {
+      bookingsWindow.postMessage(JSON.stringify({status: true}), "*");
+    }
+  }
 </script>
-
-</body>
-
-</html>
