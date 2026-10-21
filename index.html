@@ -1,33 +1,69 @@
-<!DOCTYPE html>
-
-<html>
-
+<!doctype html>
+<html lang="en">
 <head>
-
-<title>Zoho Bookings - Integration Configuration Update test</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>postMessage Test</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px; max-width: 720px; background: #fff; color: #222; }
+  input { width: 100%; padding: 8px; box-sizing: border-box; margin: 8px 0 16px; }
+  button { padding: 8px 14px; margin: 0 8px 8px 0; cursor: pointer; }
+  #log { background: #f4f4f4; padding: 12px; min-height: 120px; white-space: pre-wrap; font-family: monospace; font-size: 13px; }
+  .step { margin: 16px 0 4px; font-weight: 600; }
+</style>
 </head>
-
 <body>
+  <h2>OAuth postMessage test</h2>
+
+  <div class="step">Bookings admin URL (test org)</div>
+  <input id="target" placeholder="Paste the Bookings Integrations page URL">
+
+  <div class="step">Steps</div>
+  <button onclick="openTarget()">1. Open Bookings</button>
+  <button onclick="checkLink()">Check link to Bookings tab</button>
+  <button onclick="sendFake()">2. Send fake success</button>
+
+  <p>After step 1: in the Bookings tab, click <b>Connect</b> on a calendar and leave the login popup open. Then come back and click step 2.</p>
+
+  <div class="step">Log</div>
+  <div id="log"></div>
 
 <script>
+  var bookingsWindow = null;
 
-var target = window.open('http://bookingslab.localzoho.com/#/home/dashboard/settings/integrations/video-conferencing', 'zoho_bookings');
+  function writeLog(message) {
+    var logBox = document.getElementById("log");
+    logBox.textContent += new Date().toLocaleTimeString() + "  " + message + "\n";
+  }
 
-var payload = JSON.stringify({"status": true});
+  function openTarget() {
+    var targetUrl = document.getElementById("target").value.trim();
+    if (!targetUrl) {
+      writeLog("Enter the Bookings URL first.");
+      return;
+    }
+    bookingsWindow = window.open(targetUrl, "_blank");
+    writeLog(bookingsWindow ? "Bookings tab opened." : "Popup blocked. Allow popups for this page and try again.");
+  }
 
-setTimeout(function() {
+  function checkLink() {
+    if (!bookingsWindow) {
+      writeLog("No Bookings tab yet. Click step 1 first.");
+    } else if (bookingsWindow.closed) {
+      writeLog("Link is cut (closed = true). If the Bookings tab is still open, the site blocks messages from this page.");
+    } else {
+      writeLog("Link is OK (closed = false). Messages can reach the Bookings tab.");
+    }
+  }
 
-setInterval(function() {
-
-try { target.postMessage(payload, '*'); } catch(e) {}
-
-}, 100);
-
-}, 2000);
-
+  function sendFake() {
+    if (!bookingsWindow || bookingsWindow.closed) {
+      writeLog("Cannot send: no working link to the Bookings tab. Click 'Check link'.");
+      return;
+    }
+    bookingsWindow.postMessage(JSON.stringify({status: true, statusMessage: "Connection Authenticated Successfully"}), "*");
+    writeLog("Fake success sent. Check the Bookings tab: did the login popup close or the flow continue?");
+  }
 </script>
-
 </body>
-
 </html>
